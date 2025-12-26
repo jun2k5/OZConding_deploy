@@ -14,11 +14,14 @@ class Config:
         SQLALCHEMY_DATABASE_URI = f"sqlite+{TURSO_DATABASE_URL}?secure=true"
         CONNECT_ARGS = {"auth_token": TURSO_AUTH_TOKEN}
     else:
-        print("\n[INFO] No Turso Setup: Use temporary local db...\n")
-        
-        # 서버리스 환경에서는 /tmp 폴더만 쓰기가 가능합니다.
-        INSTANCE_DIR = "/tmp/instance" 
+        # Turso 정보가 없거나 에러가 발생한다면 로컬 db를 사용하도록 설정
+        print("\n[INFO] No Turso Setup: Use local db...\n")
+
+        # instance 폴더 경로
+        INSTANCE_DIR = os.path.join(os.path.dirname(__file__), "..", "instance")
+
+        # 폴더가 없으면 생성
         os.makedirs(INSTANCE_DIR, exist_ok=True)
 
-        SQLALCHEMY_DATABASE_URI = f"sqlite:///{INSTANCE_DIR}/reviews.db"
+        SQLALCHEMY_DATABASE_URI = "sqlite:///instance/reviews.db"
         CONNECT_ARGS = {"check_same_thread": False}
